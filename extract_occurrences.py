@@ -14,15 +14,17 @@ try:
 except IOError:
     pass
 
-def get_num_results(search_term, start_date, end_date):
+def get_num_results(search_term, start_date, end_date, include_patents, include_citations):
     """
     Helper method, sends HTTP request and returns response payload.
     """
 
     # Open website and read html
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36'
-    query_params = { 'q' : search_term, 'as_ylo' : start_date, 'as_yhi' : end_date}
-    url = "https://scholar.google.com/scholar?as_vis=1&hl=en&as_sdt=1,5&" + urllib.urlencode(query_params)
+    query_params = { 'as_vis': '0' if include_citations else '1', \
+                     'as_sdt': '0,5' if include_patents else '1,5', \
+                     'q' : search_term, 'as_ylo' : start_date, 'as_yhi' : end_date}
+    url = "https://scholar.google.com/scholar?hl=en&" + urllib.urlencode(query_params)
     opener = build_opener(HTTPCookieProcessor(cookies))
     request = Request(url=url, headers={'User-Agent': user_agent})
     handler = opener.open(request)
@@ -47,7 +49,7 @@ def get_num_results(search_term, start_date, end_date):
     return num_results, success
 
 
-def get_range(search_term, start_date, end_date):
+def get_range(search_term, start_date, end_date, include_patents, include_citations):
 
     fp = open("out.csv", 'w')
     fp.write("year,results\n")
@@ -55,7 +57,7 @@ def get_range(search_term, start_date, end_date):
 
     for date in range(start_date, end_date + 1):
 
-        num_results, success = get_num_results(search_term, date, date)
+        num_results, success = get_num_results(search_term, date, date, include_patents, include_citations)
         if not(success):
             print("It seems that you made too many requests to Google Scholar. Please wait a couple of hours and try again.")
             break
@@ -73,13 +75,15 @@ if __name__ == "__main__":
         print "Academic word relevance"
         print "******"
         print ""
-        print "Usage: python extract_occurrences.py '<search term>' <start date> <end date>"
+        print "Usage: python extract_occurrences.py '<search term>' <start date> <end date> [<include_patents> [<include_citations>]]"
 
     else:
         try:
             search_term = sys.argv[1]
             start_date = int(sys.argv[2])
             end_date = int(sys.argv[3])
-            html = get_range(search_term, start_date, end_date)
+            include_patents = bool(sys.argv[4]) if len(sys.argv) > 4 else False
+            include_citations = bool(sys.argv[4]) if len(sys.argv) > 5 else False
+            html = get_range(search_term, start_date, end_date, include_patents, include_citations)
         finally:
             cookies.save()

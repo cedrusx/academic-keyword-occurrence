@@ -8,11 +8,11 @@ in research and analyzing the relevance of a topic over time.
 
 ## Usage
 
-`python extract_occurrences.py '<keyword>' <start date> <end date>` 
+`python extract_occurrences.py '<keyword>' <start date> <end date> [<include_patents> [<include_citations>]]`
 
 This command lists the number of publications for every year using
-this keyword. The script just searches for articles and excludes
-patents and citations.
+this keyword. Set the last two optional arguments to 1 or 0 (default)
+to include or exclude patents/citations.
 
 The script requires a couple of packages (e.g. Beautiful Soup 4), you can install them with pip. 
 
