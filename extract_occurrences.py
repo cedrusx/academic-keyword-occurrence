@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # By: Volker Strobel
 from bs4 import BeautifulSoup
 import urllib
-from urllib2 import Request, build_opener, HTTPCookieProcessor
-from cookielib import LWPCookieJar
+from urllib.parse import urlencode
+from urllib.request import Request, build_opener, HTTPCookieProcessor
+from http.cookiejar import LWPCookieJar
 import re
 import time
 import sys
@@ -24,7 +25,7 @@ def get_num_results(search_term, start_date, end_date, include_patents, include_
     query_params = { 'as_vis': '0' if include_citations else '1', \
                      'as_sdt': '0,5' if include_patents else '1,5', \
                      'q' : search_term, 'as_ylo' : start_date, 'as_yhi' : end_date}
-    url = "https://scholar.google.com/scholar?hl=en&" + urllib.urlencode(query_params)
+    url = "https://scholar.google.com/scholar?hl=en&" + urlencode(query_params)
     opener = build_opener(HTTPCookieProcessor(cookies))
     request = Request(url=url, headers={'User-Agent': user_agent})
     handler = opener.open(request)
@@ -71,11 +72,11 @@ def get_range(search_term, start_date, end_date, include_patents, include_citati
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
-        print "******"
-        print "Academic word relevance"
-        print "******"
-        print ""
-        print "Usage: python extract_occurrences.py '<search term>' <start date> <end date> [<include_patents> [<include_citations>]]"
+        print("******")
+        print("Academic word relevance")
+        print("******")
+        print("")
+        print("Usage: python extract_occurrences.py '<search term>' <start date> <end date> [<include_patents> [<include_citations>]]")
 
     else:
         try:
